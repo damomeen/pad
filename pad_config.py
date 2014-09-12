@@ -1,0 +1,1 @@
+ROFL_DIR = '/home/geysers-wp5/rofl-core/src/rofl'

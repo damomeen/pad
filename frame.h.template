@@ -1,0 +1,91 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#ifndef F%(header_upper)sFRAME_H
+#define F%(header_upper)sFRAME_H 1
+
+#include <endian.h>
+#ifndef htobe16
+	#include "../endian_conversion.h"
+
+#endif
+
+#include "../fframe.h"
+#include "../caddress.h"
+#include "../cvastring.h"
+
+namespace rofl
+{
+
+class e%(header)sFrameBase 		: public eFrameBase {};
+class e%(header)sFrameTooShort		: public e%(header)sFrameBase, public eFrameInvalidSyntax {};
+class e%(header)sFrameInvalChksum	: public e%(header)sFrameBase {};
+
+
+class f%(header)sframe : public fframe {
+public:
+
+	// %(header_upper)s constants and definitions
+	struct %(header)s_hdr_t {
+%(fields)s
+		uint8_t data[0];
+	} __attribute__((packed));
+
+	enum %(header)s_%(lower_protocol_field)s_t {
+		%(header_upper)s_%(lower_protocol_field_upper)s = 17,
+	};
+
+public:
+
+	// constructors
+	f%(header)sframe(uint8_t *data, size_t datalen);
+
+	// destructors
+	virtual ~f%(header)sframe();
+
+public: // overloaded from fframe
+
+	// returns boolean value indicating completeness of the packet
+	virtual bool complete();
+
+	// returns the number of bytes this packet expects from the socket next
+	virtual size_t need_bytes();
+
+	// validate (frame structure)
+	virtual void validate(uint16_t total_len = 0) throw (e%(header)sFrameTooShort);
+
+	// initialize
+	virtual void initialize();
+
+	// insert payload
+	virtual void payload_insert(uint8_t *data, size_t datalen) throw (eFrameOutOfRange);
+
+	// get payload
+	virtual uint8_t* payload() const throw (eFrameNoPayload);
+
+	// get payload length
+	virtual size_t payloadlen() const throw (eFrameNoPayload);
+
+	// dump info
+	virtual const char* c_str();
+
+public:
+
+%(fields_getters)s
+%(fields_setters)s
+public: // data structures
+
+	struct %(header)s_hdr_t *%(header)s_hdr;                // pointer to the header
+	uint8_t *data;                                                       // payload
+	size_t datalen;                                                      // payload length
+
+private: // data structures
+
+	std::string info;                                                     // info string
+
+};
+
+}; // end of namespace
+
+#endif

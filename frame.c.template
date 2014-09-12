@@ -1,0 +1,139 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include <rofl/common/endianess_other.h>
+#include "f%(header)sframe.h"
+
+using namespace rofl;
+
+f%(header)sframe::f%(header)sframe(uint8_t* data, size_t datalen) :
+		fframe(data, datalen),
+		%(header)s_hdr(0),
+		data(0),
+		datalen(0) 
+{
+	initialize();
+}
+
+
+
+f%(header)sframe::~f%(header)sframe() 
+{
+}
+
+
+
+void
+f%(header)sframe::initialize()
+{
+	%(header)s_hdr = (struct %(header)s_hdr_t*)soframe();
+	if (framelen() > sizeof(struct %(header)s_hdr_t))
+	{
+		data = %(header)s_hdr->data;
+		datalen = framelen() - sizeof(struct %(header)s_hdr_t);
+	}
+	else
+	{
+		data = NULL;
+		datalen = 0;
+	}
+}
+
+
+bool
+f%(header)sframe::complete()
+{
+	initialize();
+
+	if (framelen() < sizeof(struct %(header)s_hdr_t))
+		return false;
+
+	return true;
+}
+
+
+size_t
+f%(header)sframe::need_bytes()
+{
+	if (complete())
+		return 0;
+
+	if (framelen() < sizeof(struct %(header)s_hdr_t))
+		return (sizeof(struct %(header)s_hdr_t) - framelen());
+
+	return 0; // just to make gcc happy
+}
+
+
+void
+f%(header)sframe::payload_insert(
+		uint8_t *data,
+		size_t datalen) throw (eFrameOutOfRange)
+{
+	if (datalen > (framelen() - sizeof(struct %(header)s_hdr_t)))
+	{
+		throw eFrameOutOfRange();
+	}
+	memcpy(%(header)s_hdr->data, data, datalen);
+	this->datalen = datalen;
+}
+
+
+uint8_t*
+f%(header)sframe::payload() const throw (eFrameNoPayload)
+{
+	//initialize(); // commented out 2012-12-13
+	if (!data)
+		throw eFrameNoPayload();
+	return data;
+}
+
+
+size_t
+f%(header)sframe::payloadlen() const throw (eFrameNoPayload)
+{
+	//initialize(); // commented out 2012-12-13
+	if (!datalen)
+		throw eFrameNoPayload();
+	return datalen;
+}
+
+
+void
+f%(header)sframe::validate(uint16_t total_len) throw (e%(header)sFrameTooShort)
+{
+	initialize();
+
+	if (!complete())
+	{
+		throw e%(header)sFrameTooShort();
+	}
+
+	// TODO: verify checksum here?
+}
+
+
+const char*
+f%(header)sframe::c_str()
+{
+	cvastring vas;
+
+	info.assign(
+        vas(
+            "[f%(header)sframe(%%p) %(field_printed_list)s %%s]",
+			this,
+%(fields_to_be_printed)s
+			fframe::c_str()
+        )
+    );
+
+	return info.c_str();
+}
+
+
+%(fields_getters)s
+
+
+%(fields_setters)s
+
