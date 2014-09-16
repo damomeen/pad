@@ -968,7 +968,6 @@ void __of1x_init_packet_matches(datapacket_t *const pkt){
 	__of1x_update_packet_matches(pkt);
 }
 
-
 /* 
 * DEBUG/INFO dumping routines 
 */
@@ -1172,17 +1171,6 @@ def generate_openflow_pipeline_match_c(fields):
 #include "../../../platform/memory.h"
 #include "../../../util/logging.h"
 \n\n"""
-
-    for field in fields:
-        if int(field['length']) < int('8'):
-            field['masking'] = '%s_BITS' % field['length']
-        elif field['length'] == '8':
-            field['masking'] = '1_BYTE'
-        elif field['length'] == '16':
-            field['masking'] = '2_BYTE'
-        elif field['length'] == '32':
-            field['masking'] = '4_BYTE'
-        code += ROFL_PIPELINE_MATCH_INIT_SKELETON % field
     
     code2 = ""
     for field in fields:
@@ -1196,6 +1184,11 @@ def generate_openflow_pipeline_match_c(fields):
         code2 += """\t\tcase OF1X_MATCH_%(header_upper)s_%(field_upper)s: if (!(pkt->%(lower_protocol_field)s == %(lower_protocol)s)) return false;
         \t\t\t\treturn __utern_compare%(length)s(it->value,pkt->%(header)s_%(field)s);\n""" % field
     code += ROFL_PIPELINE_MATCH_CHECK_SKELETON % code2
+    
+    code1 = ""
+    for field in fields:
+        code1 += ROFL_PIPELINE_MATCH_INIT_SKELETON % field
+    code += code1
 
     code2 = ""
     for field in fields:
@@ -1224,7 +1217,7 @@ def generate_openflow_pipeline_platform_packet_h(fields):
     code = ""
     for field in fields:
         code += "uint%(length)s_t platform_packet_get_%(header)s_%(field)s(datapacket_t *const pkt);\n" % field
-        code += "void platform_packet_set_%(header)s_%(field)s(datapacket_t* pkt, uint8_t code);\n" % field
+        code += "void platform_packet_set_%(header)s_%(field)s(datapacket_t* pkt, uint%(length)s_t code);\n" % field
     return ROFL_PIPELINE_PLATFORM_PACKET_H % code
     
 def generate_oxm_experimental_part(fields):
@@ -1249,7 +1242,7 @@ def generate_code_files(fields):
     add_fields_properties(fields)
     
     generate_oxm_experimental_part(fields)
-    generate_file(ROFL_DIR + '/common/openflow/openflow_experimental.h', generate_openflow_experimental(fields)) # causes long time recompile
+    #generate_file(ROFL_DIR + '/common/openflow/openflow_experimental.h', generate_openflow_experimental(fields)) # causes long time recompile
     generate_rofl_pipeline_part(fields)
     
 
