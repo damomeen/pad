@@ -1145,6 +1145,7 @@ def generate_openflow_experimental(fields):
     for field in fields:
         field['field_id'] = field_id
         code += "\tOFPXMT_OFX_%(header_upper)s_%(field_upper)s = %(field_id)d,\n" % field
+        field_id += 1
     return OPENFLOW_EXPERIMENTAL_SKELETON % code
     
 def generate_openflow_pipeline_match_h(fields):

@@ -1,4 +1,4 @@
-from pad_config import XDPD_GNU_LINUX_DIR
+from pad_config import XDPD_GNU_LINUX_DIR, XDPD_OPENFLOW
 from pad_utils import read_template, generate_file, add_fields_properties
 import copy
 
@@ -188,6 +188,59 @@ using namespace rofl;
 using namespace xdpd::gnu_linux;
 """
 
+EXPERIMENTAL_INCLUDES_SKELETON = """
+#include <rofl/common/openflow/experimental/matches/%s_matches.h>
+#include <rofl/common/openflow/experimental/actions/%s_actions.h>
+"""
+
+MATCH_TRANSLATION_SKELETON = """
+	try {
+		coxmatch_ofx_%(header)s_%(field)s oxm_%(header)s_%(field)s(
+				ofmatch.get_const_match(OFPXMC_EXPERIMENTER, OFPXMT_OFX_%(header_upper)s_%(field_upper)s));
+
+		of1x_match_t *match = of1x_init_%(header)s_%(field)s_match(
+								/*prev*/NULL,
+								/*next*/NULL,
+								oxm_%(header)s_%(field)s.get_%(header)s_%(field)s());
+
+		of1x_add_match_to_entry(entry, match);
+	} catch (eOFmatchNotFound& e) {}
+"""
+
+MATCH_SET_SKELETON = """
+				case OFPXMT_OFX_%(header_upper)s_%(field_upper)s:
+				{
+					field.u%(length)s = oxm.uint%(length)s_value();
+					action = of1x_init_packet_action( OF1X_AT_SET_FIELD_%(header_upper)s_%(field_upper)s, field, NULL, NULL);
+				}
+					break;
+"""
+
+ACTION_SET_SKELETON = """
+				case cofaction_%(action)s_%(header)s::OFXAT_%(action_upper)s_%(header_upper)s: {
+					cofaction_%(action)s_%(header)s paction(eaction);
+					field.u16 = be16toh(paction.eoac_%(action)s_%(header)s->expbody.ethertype);
+					action = of1x_init_packet_action( OF1X_AT_%(action_upper)s_%(header_upper)s, field, NULL, NULL);
+				} break;
+"""
+
+REVERSE_MATCH_SKELETON = """
+		case OF1X_MATCH_%(header_upper)s_%(field_upper)s:
+			match.insert(coxmatch_ofx_%(header)s_%(field)s(m->value->value.u%(length)s));
+			break;
+"""
+
+REVERSE_ACTION_SKELETON = """
+	case OF1X_AT_%(action_upper)s_%(header_upper)s: {
+		action = cofaction_%(action)s_%(header)s(OFP12_VERSION, (uint%(length)s_t)(of1x_action->field.u%(length)s & OF1X_%(masking)s_MASK));
+	} break;
+"""
+
+MAP_REVERSE_PACKET_MATCH_SKELETON = """
+	if(packet_matches->%(header)s_%(field)s)
+		match.insert(coxmatch_ofx_%(header)s_%(field)s(packet_matches->%(header)s_%(field)s));
+"""
+
 def generate_packet_classifier_h(fields):
     skeleton = read_template("packetclassifier.h.template") 
     
@@ -283,6 +336,45 @@ def generate_packet_c(fields):
             code2 += POP2_SKELETON % field
     
     return skeleton % (code1, code2)
+    
+def generate_translation_utils_c(fields):
+    skeleton = read_template("of12_translation_utils.c.template")
+    
+    header = fields[0]['header']
+    
+    code0 = EXPERIMENTAL_INCLUDES_SKELETON % (header, header)
+    
+    code1 = ""
+    for field in fields:
+        if 'field' in field:
+            code1 += MATCH_TRANSLATION_SKELETON % field
+    
+    code2    = ""
+    for field in fields:
+        if 'field' in field:
+            code2 += MATCH_SET_SKELETON % field 
+    
+    code3 = ""
+    for field in fields:        
+        if field.get('action') in ('push', 'pop'):
+            code3 += ACTION_SET_SKELETON % field
+            
+    code4 = ""
+    for field in fields:
+        if 'field' in field:
+            code4 += REVERSE_MATCH_SKELETON % field         
+
+    code5 = ""
+    for field in fields:
+        if field.get('action') in ('push', 'pop'):
+            code5 += REVERSE_ACTION_SKELETON % field   
+    
+    code6 = ""
+    for field in fields:
+        if 'field' in field:
+            code6+= MAP_REVERSE_PACKET_MATCH_SKELETON % field               
+
+    return skeleton % (code0, code1, code2, code3, code4, code5, code6)
 
 def generate_xdpd_files(fields):
     add_fields_properties(fields)
@@ -295,6 +387,9 @@ def generate_xdpd_files(fields):
     
     location = XDPD_GNU_LINUX_DIR + '/pipeline-imp/'
     generate_file(location + 'packet.cc', generate_packet_c(fields))
+    
+    location = XDPD_OPENFLOW + '/openflow12/'
+    generate_file(location + 'of12_translation_utils.cc', generate_translation_utils_c(fields))
 
 generate_xdpd_files([{'header': 'pad_tag', 'action':'pop', 'length': '32'}, 
                             {'header': 'pad_tag', 'action':'push', 'length': '32'}, 

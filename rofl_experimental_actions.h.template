@@ -1,0 +1,132 @@
+#ifndef %(header_upper)s_ACTIONS_H
+#define %(header_upper)s_ACTIONS_H 1
+
+#include <rofl/common/openflow/cofaction.h>
+
+namespace rofl
+{
+
+// OFXAT_PUSH_%(header_upper)s
+
+class cofaction_push_%(header)s : public cofaction_experimenter {
+
+public:
+
+	/* Action structure for OFPAT_PUSH_%(header_upper)s. */
+	struct ofx_action_push_%(header)s_header {
+	    uint16_t type;                  /* OFPAT_POP_%(header_upper)s. */
+	    uint16_t len;                   /* Length is 8. */
+	    uint16_t ethertype;             /* Ethertype */
+	    uint8_t pad[2];
+	};
+	OFP_ASSERT(sizeof(struct ofx_action_push_%(header)s_header) == 8);
+
+	enum cofaction_push_%(header)s_action_type {
+		OFXAT_PUSH_%(header_upper)s = %(experimental_id)s,
+	};
+
+	struct ofx_action_push_%(header)s {
+		struct ofp12_action_experimenter_header 	exphdr;
+		struct ofx_action_push_%(header)s_header	expbody;
+	};
+
+	union {
+		uint8_t									*oacu_action;
+		struct ofp_action_header				*oacu_header;
+		struct ofx_action_push_%(header)s 			*oacu_push_%(header)s;
+	} eoac_oacu;
+
+#define eoac_action 	eoac_oacu.oacu_action		// start of action
+#define eoac_header 	eoac_oacu.oacu_header		// action: plain header
+#define eoac_push_%(header)s eoac_oacu.oacu_push_%(header)s	// action: push
+
+
+public:
+	/** constructor
+	 */
+	cofaction_push_%(header)s(
+			uint8_t ofp_version,
+			uint16_t ethertype);
+
+	/**
+	 * constructor
+	 */
+	cofaction_push_%(header)s(
+			cofaction const& action);
+
+	/** destructor
+	 */
+	virtual
+	~cofaction_push_%(header)s();
+
+	/**
+	 *
+	 */
+	uint16_t
+	get_ethertype() const;
+};
+
+
+/** OFPAT_POP_%(header_upper)s
+ *
+ */
+class cofaction_pop_%(header)s : public cofaction_experimenter {
+public:
+
+	/* Action structure for OFPAT_POP_%(header_upper)s. */
+	struct ofx_action_pop_%(header)s_header {
+	    uint16_t type;                  /* OFPAT_POP_%(header_upper)s. */
+	    uint16_t len;                   /* Length is 8. */
+	    uint16_t ethertype;             /* Ethertype */
+	    uint8_t pad[2];
+	};
+	OFP_ASSERT(sizeof(struct ofx_action_pop_%(header)s_header) == 8);
+
+	enum cofaction_pop_%(header)s_action_type {
+		OFXAT_POP_%(header_upper)s = %(experimental_id)s + 1,
+	};
+
+	struct ofx_action_pop_%(header)s {
+		struct ofp12_experimenter_header 	exphdr;
+		struct ofx_action_pop_%(header)s_header 	expbody;
+	};
+
+	union {
+		uint8_t									*oacu_action;
+		struct ofp_action_header				*oacu_header;
+		struct ofx_action_pop_%(header)s 			*oacu_pop_%(header)s;
+	} eoac_oacu;
+
+#define eoac_action 	eoac_oacu.oacu_action		// start of action
+#define eoac_header 	eoac_oacu.oacu_header		// action: plain header
+#define eoac_pop_%(header)s eoac_oacu.oacu_pop_%(header)s		// action: pop_%(header)s
+
+
+public:
+	/** constructor
+	 */
+	cofaction_pop_%(header)s(
+			uint8_t ofp_version,
+			uint16_t ethertype);
+
+	/**
+	 * constructor
+	 */
+	cofaction_pop_%(header)s(
+			cofaction const& action);
+
+	/** destructor
+	 */
+	virtual
+	~cofaction_pop_%(header)s();
+
+	/**
+	 *
+	 */
+	uint16_t
+	get_ethertype() const;
+};
+
+}; // end of namespace
+
+#endif
