@@ -54,7 +54,7 @@ void static_pktclassifier::parse_%(header)s( uint8_t *data, size_t datalen){
 """
 
 ETHER_PARSE_SKELETON = """
-		case rofl::f%(header)sframe::%(header_upper)s_IP_PROTO:
+		case rofl::f%(header)sframe::%(header_upper)s_%(lower_protocol_field_upper)s:
 			{
 				parse_%(header)s(data,datalen);
 			}
@@ -242,7 +242,7 @@ MAP_REVERSE_PACKET_MATCH_SKELETON = """
 """
 
 def generate_packet_classifier_h(fields):
-    skeleton = read_template("packetclassifier.h.template") 
+    skeleton = read_template("templates/packetclassifier.h.template") 
     
     skeleton_attrs = copy.copy(fields[0])
     header = fields[0]['header']
@@ -262,7 +262,7 @@ def generate_packet_classifier_h(fields):
     return skeleton % skeleton_attrs
     
 def generate_static_pktclassifier_h(fields):
-    skeleton = read_template("static_pktclassifier.h.template") 
+    skeleton = read_template("templates/static_pktclassifier.h.template") 
     
     skeleton_attrs = copy.copy(fields[0])
     header = fields[0]['header']
@@ -288,7 +288,7 @@ def generate_static_pktclassifier_h(fields):
     return skeleton % skeleton_attrs
     
 def generate_static_pktclassifier_c(fields):
-    skeleton = read_template("static_pktclassifier.c.template") 
+    skeleton = read_template("templates/static_pktclassifier.c.template") 
     
     skeleton_attrs = copy.copy(fields[0])
     header = fields[0]['header']
@@ -319,7 +319,7 @@ def generate_static_pktclassifier_c(fields):
     return skeleton % skeleton_attrs
     
 def generate_packet_c(fields):
-    skeleton = read_template("packet.c.template") 
+    skeleton = read_template("templates/packet.c.template") 
     skeleton_attrs = copy.copy(fields[0])
     header = fields[0]['header']
     
@@ -338,7 +338,7 @@ def generate_packet_c(fields):
     return skeleton % (code1, code2)
     
 def generate_translation_utils_c(fields):
-    skeleton = read_template("of12_translation_utils.c.template")
+    skeleton = read_template("templates/of12_translation_utils.c.template")
     
     header = fields[0]['header']
     
@@ -376,7 +376,7 @@ def generate_translation_utils_c(fields):
 
     return skeleton % (code0, code1, code2, code3, code4, code5, code6)
 
-def generate_xdpd_files(fields):
+def generate_xdpd(fields):
     add_fields_properties(fields)
     header = fields[0]['header']
     
@@ -391,7 +391,8 @@ def generate_xdpd_files(fields):
     location = XDPD_OPENFLOW + '/openflow12/'
     generate_file(location + 'of12_translation_utils.cc', generate_translation_utils_c(fields))
 
-generate_xdpd_files([{'header': 'pad_tag', 'action':'pop', 'length': '32'}, 
+if __name__ == "__main__":
+    generate_xdpd([{'header': 'pad_tag', 'action':'pop', 'length': '32'}, 
                             {'header': 'pad_tag', 'action':'push', 'length': '32'}, 
                             {'header': 'pad_tag', 'field':'a', 'length':'8', 'action':'set'},
                             {'header': 'pad_tag', 'field':'b', 'length':'16', 'action':'set'}])

@@ -1,10 +1,10 @@
 from pytun import TunTapDevice, IFF_TAP
 import sys, os, logging, time
 from optparse import OptionParser
+from binascii import hexlify
 
 from deamon import Daemon
 
-from scapy.all import sniff
 from dpkt.ethernet import Ethernet 
 
 ##############################################
@@ -38,7 +38,10 @@ class TapDaemon(Daemon):
             tap0.persist(True)
             tap0.up()
             logger.info("tap0 interface created")
+        except:
+            logger.exception("exception: ")
             
+        try:
             tap1 = TunTapDevice(name="tap1", flags=IFF_TAP)
             tap1.hwaddr = '\x00\x11\x22\x33\x44\x66'
             tap1.addr = '192.168.1.1'
@@ -50,16 +53,17 @@ class TapDaemon(Daemon):
             logger.info("tap1 interface created")
         except:
             logger.exception("exception: ")
+            
         try:
             while True:
                 time.sleep(2)
-                frame = Ethernet(dst="\x01\x02\x03\x04\x05\x06", src="\x0A\x0B\x0C\x0D\x0E\x0F", type = 0x700, data = "a"*40)
+                frame = Ethernet(dst="\x01\x02\x03\x04\x05\x06", src="\x0A\x0B\x0C\x0D\x0E\x0F", type = 0x701, data = "a"*40)
                 tap0.write("\x11\x22\x33\x44" + str(frame))
-                #~ frames = sniff(iface="tap0", count=3)
-                #~ logger.info("Frames received")
-                #~ for frame in frames:
-                    #~ logger.info(frame.summary())
-                    #~ logger.info("  --> %s", frame.mysummary())
+                logger.info("Frame send to tap0")
+
+                logger.info("Waiting for frame in tap1...")
+                buf = tap1.read(tap1.mtu)
+                logger.info("Received %s", hexlify(buf))
                 logger.info("\n\n ---------------------------------------------------")
         except:
             logger.exception("exception: ")

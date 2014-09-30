@@ -1,5 +1,5 @@
 from pad_config import ROFL_DIR
-from pad_utils import read_template, generate_file, add_fields_properties
+from pad_utils import read_template, generate_file, add_fields_properties, approve_fields_with_attribute
 import copy
 
 FIELD_GETTER = """
@@ -16,7 +16,7 @@ void f%(header)sframe::set_%(field)s(uint%(length)s_t %(field)s)
 """
 
 def generate_common_protocol_frame_h(fields):
-    skeleton = read_template("frame.h.template") 
+    skeleton = read_template("templates/frame.h.template") 
     
     skeleton_attrs = copy.copy(fields[0])
     
@@ -35,7 +35,7 @@ def generate_common_protocol_frame_h(fields):
     return skeleton % skeleton_attrs
     
 def generate_common_protocol_frame_c(fields):
-    skeleton = read_template("frame.c.template") 
+    skeleton = read_template("templates/frame.c.template") 
     
     skeleton_attrs = copy.copy(fields[0])
     
@@ -58,13 +58,14 @@ def generate_common_protocol_frame_c(fields):
     return skeleton % skeleton_attrs
     
 def generate_common_protocol_makefile(fields):
-    skeleton = read_template("protocols_makefile.am.template") 
+    skeleton = read_template("templates/protocols_makefile.am.template") 
     
     header = fields[0]['header']
     
     return skeleton % ("f%sframe.cc " % header, "f%sframe.h " % header)
     
 def generate_rofl_frames(fields):
+    fields = approve_fields_with_attribute(fields, 'field')
     add_fields_properties(fields)
     header = fields[0]['header']
     
@@ -73,7 +74,8 @@ def generate_rofl_frames(fields):
     generate_file(location + 'f%sframe.cc' % header, generate_common_protocol_frame_c(fields))
     generate_file(location + 'Makefile.am', generate_common_protocol_makefile(fields))
     
-generate_rofl_frames([{'header': 'pad_tag', 'field':'a', 'length':'8', 'lower_protocol_field':'ip_proto'},
+if __name__ == "__main__":
+    generate_rofl_frames([{'header': 'pad_tag', 'field':'a', 'length':'8', 'lower_protocol_field':'ip_proto', 'lower_protocol_field_value': 0x700},
                                {'header': 'pad_tag', 'field':'b', 'length':'16'}])
 
 

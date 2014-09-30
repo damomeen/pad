@@ -33,7 +33,7 @@ public:
 	} __attribute__((packed));
 
 	enum %(header)s_%(lower_protocol_field)s_t {
-		%(header_upper)s_%(lower_protocol_field_upper)s = 17,
+		%(header_upper)s_%(lower_protocol_field_upper)s = %(lower_protocol_field_value)d,
 	};
 
 public:
