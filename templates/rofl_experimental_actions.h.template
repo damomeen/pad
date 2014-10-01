@@ -87,7 +87,7 @@ public:
 	};
 
 	struct ofx_action_pop_%(header)s {
-		struct ofp12_experimenter_header 	exphdr;
+		struct ofp12_action_experimenter_header 	exphdr;
 		struct ofx_action_pop_%(header)s_header 	expbody;
 	};
 

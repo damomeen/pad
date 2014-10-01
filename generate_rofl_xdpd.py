@@ -5,7 +5,7 @@ from xdpd_gen import generate_xdpd
 
 header = {'name':'ictp',
               'lower_protocol_field':'eth_type',
-              'lower_protocol_field_value': 0x700,
+              'lower_protocol_field_value': 0x9100,
               'actions':  [ {'action':'pop', 'length': '32'}, 
                                   {'action':'push', 'length': '32'}, 
                ],
@@ -21,17 +21,15 @@ def desc_flattening(header):
     for field in header['fields']:
         field['action'] = 'set'
         fields.append(field)
-    
-    print fields
         
     for field in fields:
         field['header'] = header['name']
         field['lower_protocol_field'] = header['lower_protocol_field']
         field['lower_protocol_field_value'] = header['lower_protocol_field_value']
+    
+    return fields
 
 fields = desc_flattening(header)
-
-
 
 if __name__ == "__main__":
     generate_rofl_actions(fields)

@@ -1246,7 +1246,7 @@ def generate_openflow_common_coxmatch_c(fields):
         
     code1 = ""
     for field in fields:
-        code1 +=  """	{ OFPXMT_OFX_%(header_upper)s_%(field_upper)s, 		"%(header_upper)s_%(field_upper)s" },"""  % field
+        code1 +=  """	{ OFPXMT_OFX_%(header_upper)s_%(field_upper)s, 		"%(header_upper)s_%(field_upper)s" },\n"""  % field
     return skeleton % (code0, code1)
     
 def generate_oxm_experimental_part(fields):

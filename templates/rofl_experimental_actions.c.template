@@ -14,7 +14,7 @@ cofaction_push_%(header)s::cofaction_push_%(header)s(
 		eoac_header = cofaction_experimenter::soaction();
 
 		eoac_push_%(header)s->expbody.type		= htobe16(OFXAT_PUSH_%(header_upper)s);
-		eoac_push_%(header)s->expbody.len		= htobe16(sizeof(struct ofp12_action_push));
+		eoac_push_%(header)s->expbody.len		= htobe16(sizeof(struct ofx_action_push_%(header)s_header));
 		eoac_push_%(header)s->expbody.ethertype 	= htobe16(ethertype);
 	} break;
 	}
@@ -57,7 +57,7 @@ cofaction_push_%(header)s::get_ethertype() const
 cofaction_pop_%(header)s::cofaction_pop_%(header)s(
 		uint8_t ofp_version,
 		uint16_t ethertype) :
-			cofaction_experimenter(ofp_version, ROFL_EXPERIMENTER_ID, OFXAT_POP_%(header_upper)s, sizeof(struct ofx_action_pop_%(header)s))
+			cofaction_experimenter(ofp_version, ROFL_EXPERIMENTER_ID, OFXAT_POP_%(header_upper)s, sizeof(struct ofx_action_pop_%(header)s_header))
 {
 	switch (ofp_version) {
 	case OFP12_VERSION:

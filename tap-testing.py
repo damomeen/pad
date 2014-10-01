@@ -57,7 +57,7 @@ class TapDaemon(Daemon):
         try:
             while True:
                 time.sleep(2)
-                frame = Ethernet(dst="\x01\x02\x03\x04\x05\x06", src="\x0A\x0B\x0C\x0D\x0E\x0F", type = 0x701, data = "a"*40)
+                frame = Ethernet(dst="\x01\x02\x03\x04\x05\x06", src="\x0A\x0B\x0C\x0D\x0E\x0F", type = 0x9100, data = "\x11\x00\x00\x00\x33\x22\x00\x00"+"\x61"*40)
                 tap0.write("\x11\x22\x33\x44" + str(frame))
                 logger.info("Frame send to tap0")
 

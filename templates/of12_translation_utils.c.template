@@ -929,8 +929,8 @@ of12_translation_utils::of12_map_flow_entry_actions(
 					action = of1x_init_packet_action( OF1X_AT_SET_FIELD_GTP_TEID, field, NULL, NULL);
 				}
 					break;
-				}
 %s
+				}
 			}
 				break;
 			default:
