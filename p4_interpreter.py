@@ -146,7 +146,7 @@ def parse_headers(headers):
         
 def parse_parsers(parsers):
     parser, starter = p4_parser()
-    all_parsers = Group(starter & OneOrMore(parser)).setParseAction(parsers2dict)
+    all_parsers = Group(starter & OneOrMore(parser))
     return all_parsers.parseString(parsers)[0]
    
           
@@ -176,15 +176,19 @@ class TestParseHeaders(unittest.TestCase):
               }
         """
         self.result =str([{'header': 'ethernet', 
-                                'fields': {'ethertype': '16', 'src_addr': '48', 'dst_addr': '48'}
+                                'fields': [{'field': 'dst_addr', 'length': '48'}, 
+                                                {'field': 'src_addr', 'length': '48'},
+                                                {'field': 'ethertype', 'length': '16'}]
                               }, 
                               {'header': 'ictp', 
-                                'fields': {'csn': '32', 'nid': '32'}
+                                'fields':  [{'field': 'nid', 'length': '32'},
+                                                 {'field': 'csn', 'length': '32'}]
                               }
                             ])
 
     def test(self):
-        self.assertEqual(str(parse_headers(self.text)), self.result)
+        parsed = parse_headers(self.text)
+        self.assertEqual(str(parsed), self.result)
 
 class TestParseParsers(unittest.TestCase):
     def setUp(self):
@@ -200,11 +204,12 @@ class TestParseParsers(unittest.TestCase):
               }
         """
         self.result =str([['parser', 'start', 'ethernet'],
-                              ['parser', 'ethernet', {'ethertype': {'0x9100': 'ictp', '0x800': 'ipv4'}}]
+                              ['parser', 'ethernet', 'ethertype', {'ictp': '0x9100', 'ipv4': '0x800'}]
                             ])
 
     def test(self):
-        self.assertEqual(str(parse_parsers(self.text)), self.result)
+        parsed = parse_parsers(self.text)
+        self.assertEqual(str(parsed), self.result)
         
 class TestParseActions(unittest.TestCase):
     def setUp(self):
@@ -220,39 +225,27 @@ class TestParseActions(unittest.TestCase):
                 remove_header(ictp, sizeof(ethernet));
             }
         """
-        self.result =str([['action', 'push_ictp', [{'function': 'add_header', 
+        self.result =str([['action', 'push_ictp', {'function': 'add_header', 
                                                                     'header': 'ictp', 
-                                                                    'offset': {'sizeof': 'ethernet'}}]
+                                                                    'offset': {'sizeof': 'ethernet'}}
                                ],
-                               ['action', 'pop_ictp', [{'function': 'remove_header', 
+                               ['action', 'pop_ictp', {'function': 'remove_header', 
                                                                     'header': 'ictp', 
-                                                                    'offset': {'sizeof': 'ethernet'}}]
+                                                                    'offset': {'sizeof': 'ethernet'}}
                                 ],
-                                ['action', 'nothing_ictp', [{'function': 'add_header', 
+                                ['action', 'nothing_ictp', {'function': 'add_header', 
                                                                            'header': 'ictp', 
                                                                            'offset': {'sizeof': 'ethernet'}
                                                                           }, 
                                                                           {'function': 'remove_header', 
                                                                             'header': 'ictp', 
                                                                             'offset': {'sizeof': 'ethernet'}
-                                                                          }]
+                                                                          }
                                 ]
                             ])
-
     def test(self):
-        self.assertEqual(str(parse_actions(self.text)), self.result)
-        
-{'name':'ictp',
-              'lower_protocol_field':'eth_type',
-              'lower_protocol_field_value': 0x9100,
-              'actions':  [ {'action':'pop', 'length': '32'}, 
-                                  {'action':'push', 'length': '32'}, 
-               ],
-              'fields':  [ {'field':'nid', 'length':'32'},
-                                {'field':'csn', 'length':'32'}, 
-               ], 
-}
+        parsed = parse_actions(self.text)
+        self.assertEqual(str(parsed), self.result)
 
 if __name__ == "__main__":
-    pass 
-    #unittest.main()
+    unittest.main()
