@@ -3,6 +3,9 @@ from rofl_gen_experimental_matches import generate_rofl_matches
 from rofl_gen_frames import generate_rofl_frames
 from xdpd_gen import generate_xdpd
 
+from utils import generate_file, read_template
+from config import ROFL_DIR, MODIFIED_DIR
+
 import copy
 
 
@@ -49,8 +52,15 @@ def translate_p4_to_xdpd(p4_protocols, p4_actions):
 
     return protocol
     
+def __copy_modified_files():
+    generate_file(ROFL_DIR + "/common/endianess_other.h", read_template(MODIFIED_DIR + "/endianess_other.h"))
+    generate_file(ROFL_DIR + "/common/Makefile.am", read_template(MODIFIED_DIR + "/rofl_common_Makefile.am"))
+    generate_file(ROFL_DIR + "/datapath/pipeline/openflow/openflow1x/pipeline/Makefile.am", read_template(MODIFIED_DIR + "/rofl_datapath_pipeline_Makefile.am"))
 
 def generate_xdpd_rofl(fields):
+    
+    __copy_modified_files()
+    
     fields = __desc_flattening(fields)
     actions_experimental_ids = generate_rofl_actions(fields)
     matches_experimental_ids = generate_rofl_matches(fields)
@@ -61,6 +71,10 @@ def generate_xdpd_rofl(fields):
         matches_experimental_ids[header] += actions_experimental_ids[header]
         
     return matches_experimental_ids
+    
+    
+
+
 
 if __name__ == "__main__":
     protocol = {'header':'ictp',
