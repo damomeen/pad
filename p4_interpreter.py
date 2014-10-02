@@ -85,38 +85,6 @@ def p4_action():
     basic_instructions = OneOrMore(basic_instruction)
     return Group(Keyword("action") + ACTION + LBRACK + basic_instructions + RBRACK)
 
-text = """
-            header ethernet {
-                fields {
-                    dst_addr : 48;
-                    src_addr : 48;
-                    ethertype : 16;
-                }
-            }
-             header ictp {   
-                fields {
-                  nid : 32; 
-                  csn : 32;   
-                }
-              }
-            action push_ictp {
-                add_header(ictp, sizeof(ethernet));
-            }
-            action pop_ictp {
-                remove_header(ictp, sizeof(ethernet));
-            }
-            parser start {
-                ethernet;
-              }
-              parser ethernet {
-                switch(ethertype) { 
-                  case 0x9100: ictp;
-                  case 0x800: ipv4;
-                }
-              }
-
-"""
-
 # ------------- PARSE FUNCTIONS  -------------------------------------------------------------------------------------
 
 def parse_p4(spec):
