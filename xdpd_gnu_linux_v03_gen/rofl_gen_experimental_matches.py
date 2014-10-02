@@ -1,4 +1,4 @@
-from pad_config import ROFL_DIR, TEMPLATES_DIR
+from config import ROFL_DIR, TEMPLATES_DIR
 from pad_utils import read_template, generate_file, add_fields_properties, approve_fields_with_attribute
 
 OXM_HEADER_BEGIN_END = """

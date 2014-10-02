@@ -1,4 +1,4 @@
-from xdpd_gnu_linux_generators.generate_rofl_xdpd import translate_p4_to_xdpd, generate_xdpd_rofl
+from xdpd_gnu_linux_v03_gen.generate_rofl_xdpd import translate_p4_to_xdpd, generate_xdpd_rofl
 from p4_interpreter import parse_p4
 
 
