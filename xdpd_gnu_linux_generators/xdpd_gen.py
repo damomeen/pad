@@ -1,4 +1,4 @@
-from pad_config import XDPD_GNU_LINUX_DIR, XDPD_OPENFLOW
+from pad_config import XDPD_GNU_LINUX_DIR, XDPD_OPENFLOW, TEMPLATES_DIR
 from pad_utils import read_template, generate_file, add_fields_properties
 import copy
 
@@ -242,7 +242,7 @@ MAP_REVERSE_PACKET_MATCH_SKELETON = """
 """
 
 def generate_packet_classifier_h(fields):
-    skeleton = read_template("templates/packetclassifier.h.template") 
+    skeleton = read_template(TEMPLATES_DIR + "/packetclassifier.h.template") 
     
     skeleton_attrs = copy.copy(fields[0])
     header = fields[0]['header']
@@ -262,7 +262,7 @@ def generate_packet_classifier_h(fields):
     return skeleton % skeleton_attrs
     
 def generate_static_pktclassifier_h(fields):
-    skeleton = read_template("templates/static_pktclassifier.h.template") 
+    skeleton = read_template(TEMPLATES_DIR + "/static_pktclassifier.h.template") 
     
     skeleton_attrs = copy.copy(fields[0])
     header = fields[0]['header']
@@ -288,7 +288,7 @@ def generate_static_pktclassifier_h(fields):
     return skeleton % skeleton_attrs
     
 def generate_static_pktclassifier_c(fields):
-    skeleton = read_template("templates/static_pktclassifier.c.template") 
+    skeleton = read_template(TEMPLATES_DIR + "/static_pktclassifier.c.template") 
     
     skeleton_attrs = copy.copy(fields[0])
     header = fields[0]['header']
@@ -319,7 +319,7 @@ def generate_static_pktclassifier_c(fields):
     return skeleton % skeleton_attrs
     
 def generate_packet_c(fields):
-    skeleton = read_template("templates/packet.c.template") 
+    skeleton = read_template(TEMPLATES_DIR + "/packet.c.template") 
     skeleton_attrs = copy.copy(fields[0])
     header = fields[0]['header']
     
@@ -338,7 +338,7 @@ def generate_packet_c(fields):
     return skeleton % (code1, code2)
     
 def generate_translation_utils_c(fields):
-    skeleton = read_template("templates/of12_translation_utils.c.template")
+    skeleton = read_template(TEMPLATES_DIR + "/of12_translation_utils.c.template")
     
     header = fields[0]['header']
     

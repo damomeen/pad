@@ -1,4 +1,4 @@
-from pad_config import ROFL_DIR
+from pad_config import ROFL_DIR, TEMPLATES_DIR
 from pad_utils import read_template, generate_file, add_fields_properties, approve_fields_with_attribute
 import copy
 
@@ -16,7 +16,7 @@ void f%(header)sframe::set_%(field)s(uint%(length)s_t %(field)s)
 """
 
 def generate_common_protocol_frame_h(fields):
-    skeleton = read_template("templates/frame.h.template") 
+    skeleton = read_template(TEMPLATES_DIR + "/frame.h.template") 
     
     skeleton_attrs = copy.copy(fields[0])
     
@@ -35,7 +35,7 @@ def generate_common_protocol_frame_h(fields):
     return skeleton % skeleton_attrs
     
 def generate_common_protocol_frame_c(fields):
-    skeleton = read_template("templates/frame.c.template") 
+    skeleton = read_template(TEMPLATES_DIR + "/frame.c.template") 
     
     skeleton_attrs = copy.copy(fields[0])
     
@@ -58,7 +58,7 @@ def generate_common_protocol_frame_c(fields):
     return skeleton % skeleton_attrs
     
 def generate_common_protocol_makefile(fields):
-    skeleton = read_template("templates/protocols_makefile.am.template") 
+    skeleton = read_template(TEMPLATES_DIR + "/protocols_makefile.am.template") 
     
     header = fields[0]['header']
     

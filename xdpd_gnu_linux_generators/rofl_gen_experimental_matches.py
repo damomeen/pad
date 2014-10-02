@@ -1,4 +1,4 @@
-from pad_config import ROFL_DIR
+from pad_config import ROFL_DIR, TEMPLATES_DIR
 from pad_utils import read_template, generate_file, add_fields_properties, approve_fields_with_attribute
 
 OXM_HEADER_BEGIN_END = """
@@ -1195,10 +1195,6 @@ def generate_openflow_pipeline_match_c(fields):
     
     code2 = ""
     for field in fields:
-        #field['lower_protocol'] = 'OF1X_IP_PROTO_UDP' # TODO
-        #field['lower_protocol_field'] = 'ip_proto' # TODO
-        #code2 += """\t\tcase OF1X_MATCH_%(header_upper)s_%(field_upper)s: if (!(pkt->%(lower_protocol_field)s == %(lower_protocol)s)) return false;
-        #\t\t\t\treturn __utern_compare%(length)s(it->value,pkt->%(header)s_%(field)s);\n""" % field
         code2 += """\t\tcase OF1X_MATCH_%(header_upper)s_%(field_upper)s:\n\t\t\t\treturn __utern_compare%(length)s(it->value,pkt->%(header)s_%(field)s);\n""" % field
     code += ROFL_PIPELINE_MATCH_CHECK_SKELETON % code2
     
@@ -1238,7 +1234,7 @@ def generate_openflow_pipeline_platform_packet_h(fields):
     return ROFL_PIPELINE_PLATFORM_PACKET_H % code
     
 def generate_openflow_common_coxmatch_c(fields):
-    skeleton = read_template("templates/rofl_coxmatches.c.template")
+    skeleton = read_template(TEMPLATES_DIR + "/rofl_coxmatches.c.template")
     
     code0 = ""
     for field in fields:
@@ -1275,6 +1271,15 @@ def generate_rofl_matches(fields):
     generate_file(ROFL_DIR + '/common/openflow/openflow_experimental.h', generate_openflow_experimental(fields)) # causes long time recompile
     generate_file(ROFL_DIR + '/common/openflow/coxmatch.cc', generate_openflow_common_coxmatch_c(fields))
     generate_rofl_pipeline_part(fields)
+    
+    experimental_ids = {}
+    for field in fields:
+        if 'field_id' in field:
+            if field['header'] not in experimental_ids:
+                experimental_ids[field['header']] = []
+            experimental_ids[field['header']].append({'field':field['field'], 'experimental_id':field['field_id']})
+            
+    return experimental_ids
     
     
     
