@@ -1,5 +1,5 @@
 from config import ROFL_DIR, TEMPLATES_DIR
-from pad_utils import read_template, generate_file, add_fields_properties, approve_fields_with_attribute
+from utils import read_template, generate_file, add_fields_properties, approve_fields_with_attribute, fields_iterator
 import copy
 
 FIELD_GETTER = """
@@ -25,11 +25,11 @@ def generate_common_protocol_frame_h(fields):
         skeleton_attrs['fields'] += "\t\tuint%(length)s_t %(field)s;\n" % field
         
     skeleton_attrs['fields_getters'] = ""
-    for field in fields:
+    for field in fields_iterator(fields):
         skeleton_attrs['fields_getters'] += "\tuint%(length)s_t get_%(field)s();\n" % field
     
     skeleton_attrs['fields_setters'] = ""
-    for field in fields:
+    for field in fields_iterator(fields):
         skeleton_attrs['fields_setters'] += "\tvoid set_%(field)s(uint%(length)s_t %(field)s);\n" % field
         
     return skeleton % skeleton_attrs
@@ -40,19 +40,19 @@ def generate_common_protocol_frame_c(fields):
     skeleton_attrs = copy.copy(fields[0])
     
     skeleton_attrs['field_printed_list'] = ""
-    for field in fields:
+    for field in fields_iterator(fields):
         skeleton_attrs['field_printed_list'] += "%(field)s[%%d] " % field
         
     skeleton_attrs['fields_to_be_printed'] = ""
-    for field in fields:
+    for field in fields_iterator(fields):
         skeleton_attrs['fields_to_be_printed'] += "\t\t\tbe%(length)stoh(%(header)s_hdr->%(field)s),\n" % field
 
     skeleton_attrs['fields_getters'] = ""
-    for field in fields:
+    for field in fields_iterator(fields):
         skeleton_attrs['fields_getters'] += FIELD_GETTER % field
         
     skeleton_attrs['fields_setters'] = ""
-    for field in fields:
+    for field in fields_iterator(fields):
         skeleton_attrs['fields_setters'] +=  FIELD_SETTER % field
         
     return skeleton % skeleton_attrs

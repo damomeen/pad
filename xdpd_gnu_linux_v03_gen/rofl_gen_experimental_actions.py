@@ -1,5 +1,5 @@
 from config import ROFL_DIR, TEMPLATES_DIR
-from pad_utils import read_template, generate_file, add_fields_properties
+from utils import read_template, generate_file, add_fields_properties
 
 
 ROFL_EXPERIMENTAL_ACTIONS_MAKEFILE_SKELETON = """
@@ -19,7 +19,7 @@ def generate_openflow_pipeline_action_h(fields):
     for field in fields:
         if 'field' not in field:
             code1 += "\tOF1X_AT_%(action_upper)s_%(header_upper)s,\n" % field
-        else:
+        elif field['field'] != '__skip__':
             code1 += "\tOF1X_AT_%(action_upper)s_FIELD_%(header_upper)s_%(field_upper)s,\n" % field
     
     code2 = ""
@@ -36,7 +36,7 @@ def generate_openflow_pipeline_action_c(fields):
     for field in fields:
         if 'field' not in field:
             code1 += "\t\tcase OF1X_AT_%(action_upper)s_%(header_upper)s:\n" % field
-        else:
+        elif field['field'] != '__skip__':
             code1 += "\t\tcase OF1X_AT_%(action_upper)s_FIELD_%(header_upper)s_%(field_upper)s:\n" % field
             
         code1 += "\t\t\taction->field.u%(length)s = field.u%(length)s&OF1X_%(masking)s_MASK;\n" % field
@@ -50,7 +50,7 @@ def generate_openflow_pipeline_action_c(fields):
             code2 += "\t\t\tplatform_packet_%(action)s_%(header)s(pkt, action->field.u%(length)s);\n" % field
             code2 += "\t\t\tpkt_matches->eth_type= platform_packet_get_eth_type(pkt);\n" % field
             code2 += "\t\t\tpkt_matches->pkt_size_bytes = platform_packet_get_size_bytes(pkt);\n" % field
-        else:
+        elif field['field'] != '__skip__':
             code2 += "\t\tcase OF1X_AT_%(action_upper)s_FIELD_%(header_upper)s_%(field_upper)s:\n" % field
             code2 += "\t\t\tplatform_packet_set_%(header)s_%(field)s(pkt, action->field.u%(length)s);\n" % field
             code2 += "\t\t\tpkt_matches->%(header)s_%(field)s = action->field.u%(length)s;\n" % field
@@ -60,7 +60,7 @@ def generate_openflow_pipeline_action_c(fields):
     for field in fields:
         if 'field' not in field:
             code3 += """\t\tcase OF1X_AT_%(action_upper)s_%(header_upper)s: ROFL_PIPELINE_DEBUG_NO_PREFIX("%(action_upper)s_%(header_upper)s"); \n""" % field
-        else:
+        elif field['field'] != '__skip__':
             code3 += """\t\tcase OF1X_AT_%(action_upper)s_FIELD_%(header_upper)s_%(field_upper)s: \n""" % field
             code3 += """\t\t\tROFL_PIPELINE_DEBUG_NO_PREFIX("%(action_upper)s_%(header_upper)s_%(field_upper)s: 0x%%x",action.field.u%(length)s); \n""" % field
         code3 += "\t\t\tbreak;\n"    

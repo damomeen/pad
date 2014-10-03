@@ -1,5 +1,5 @@
 from config import XDPD_GNU_LINUX_DIR, XDPD_OPENFLOW, TEMPLATES_DIR
-from pad_utils import read_template, generate_file, add_fields_properties
+from utils import read_template, generate_file, add_fields_properties, fields_iterator
 import copy
 
 INIT_SKELETON = """
@@ -327,7 +327,7 @@ def generate_packet_c(fields):
     
     code2 = ""
     for field in fields:
-        if 'field' in field:
+        if 'field' in field and field['field'] != '__skip__':
             code2 += GET_SKELETON % field
             code2 += SET_SKELETON % field
         if field.get('action') == 'push':
@@ -345,14 +345,12 @@ def generate_translation_utils_c(fields):
     code0 = EXPERIMENTAL_INCLUDES_SKELETON % (header, header)
     
     code1 = ""
-    for field in fields:
-        if 'field' in field:
-            code1 += MATCH_TRANSLATION_SKELETON % field
+    for field in fields_iterator(fields):
+        code1 += MATCH_TRANSLATION_SKELETON % field
     
     code2    = ""
-    for field in fields:
-        if 'field' in field:
-            code2 += MATCH_SET_SKELETON % field 
+    for field in fields_iterator(fields):
+        code2 += MATCH_SET_SKELETON % field 
     
     code3 = ""
     for field in fields:        
@@ -360,9 +358,8 @@ def generate_translation_utils_c(fields):
             code3 += ACTION_SET_SKELETON % field
             
     code4 = ""
-    for field in fields:
-        if 'field' in field:
-            code4 += REVERSE_MATCH_SKELETON % field         
+    for field in fields_iterator(fields):
+        code4 += REVERSE_MATCH_SKELETON % field         
 
     code5 = ""
     for field in fields:
@@ -370,9 +367,8 @@ def generate_translation_utils_c(fields):
             code5 += REVERSE_ACTION_SKELETON % field   
     
     code6 = ""
-    for field in fields:
-        if 'field' in field:
-            code6+= MAP_REVERSE_PACKET_MATCH_SKELETON % field               
+    for field in fields_iterator(fields):
+        code6+= MAP_REVERSE_PACKET_MATCH_SKELETON % field               
 
     return skeleton % (code0, code1, code2, code3, code4, code5, code6)
 

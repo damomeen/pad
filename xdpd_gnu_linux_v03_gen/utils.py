@@ -35,3 +35,9 @@ def add_fields_properties(fields):
         
 def approve_fields_with_attribute(fields, attribute):
     return [field for field in fields if attribute in field]
+    
+    
+def fields_iterator(fields):
+    for field in fields:
+        if 'field' in field and field['field'] != '__skip__':
+            yield field
