@@ -118,7 +118,7 @@ def generate_rofl_actions(fields):
             full_action_name = "%s_%s" % (field['action'], field['header'])
             experimental_ids[field['header']].append({'action':full_action_name, 'experimental_id':field['experimental_id']})
         else:
-            experimental_ids[field['header']].append({'action':full_action_name, 'experimental_id':'4'}) # TODO FIX
+            experimental_ids[field['header']].append({'action':full_action_name, 'experimental_id':4}) # TODO FIX
     return experimental_ids
 
 

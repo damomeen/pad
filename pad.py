@@ -79,6 +79,8 @@ def remove_all_entries(structure_id):
     
 if __name__ == "__main__":
     
+    import pprint
+    
     # Example of usage:
     
     ethernet_hrd = """
@@ -121,6 +123,7 @@ if __name__ == "__main__":
     add_function("push_ictp", push_ictp)
     add_function("pop_ictp", pop_ictp)   
     
-    print commit_configuration()
+    of_extensions_ids = commit_configuration()
+    pprint.pprint(of_extensions_ids)
 
     
