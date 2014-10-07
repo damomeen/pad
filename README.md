@@ -10,6 +10,7 @@ Limitations
 
 It is PAD v0.1 for xDPd/ROFL and thus:
 
+ - OpenFlow v1.2 is only supported (OF match and action extensions are used for manipulation of new headers)
  - Currently you can add a new header just after Ethernet header
  - A new header can be composed of any amount of 1-, 2- and 4- bytes fields
  - Only header add/remove actions are provided (support for P4 specification of actions declarations is currently very weak)
@@ -22,6 +23,7 @@ Requirements
 - Python v2.7
 
 [2] http://www.roflibs.org/, https://github.com/bisdn/rofl-core
+
 [3] http://www.xdpd.org/, https://github.com/bisdn/xdpd
 
 How to configure 

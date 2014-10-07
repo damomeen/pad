@@ -56,12 +56,16 @@ def __copy_modified_files():
     generate_file(ROFL_DIR + "/common/endianess_other.h", read_template(MODIFIED_DIR + "/endianess_other.h"))
     generate_file(ROFL_DIR + "/common/Makefile.am", read_template(MODIFIED_DIR + "/rofl_common_Makefile.am"))
     
+    generate_file(ROFL_DIR + "/common/openflow/cofaction.h", read_template(MODIFIED_DIR + "/cofaction.h"))
+    generate_file(ROFL_DIR + "/common/openflow/cofaction.cc", read_template(MODIFIED_DIR + "/cofaction.cc"))
+    
     generate_file(ROFL_DIR + "/datapath/pipeline/openflow/openflow1x/pipeline/Makefile.am", read_template(MODIFIED_DIR + "/rofl_datapath_pipeline_Makefile.am"))
     generate_file(ROFL_DIR + "/datapath/pipeline/openflow/openflow1x/pipeline/of1x_match.h", read_template(MODIFIED_DIR + "/of1x_match.h"))
     generate_file(ROFL_DIR + "/datapath/pipeline/openflow/openflow1x/pipeline/of1x_match.c", read_template(MODIFIED_DIR + "/of1x_match.c"))
     
     generate_file(ROFL_DIR + "/datapath/pipeline/platform/Makefile.am", read_template(MODIFIED_DIR + "/rofl_datapath_platform_Makefile.am"))
     generate_file(ROFL_DIR + "/datapath/pipeline/platform/packet.h", read_template(MODIFIED_DIR + "/packet.h"))
+    
 
 def generate_xdpd_rofl(fields):
     

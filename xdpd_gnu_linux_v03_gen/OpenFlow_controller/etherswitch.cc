@@ -134,7 +134,7 @@ ethswitch::handle_dpath_open(
 	send_flow_mod_message(dpt, fe);
     std::cerr << "first flowmod sent" << std::endl; 
 
-	cfib::get_fib(dpt->get_dpid()).dpt_bind(this, dpt);
+	//cfib::get_fib(dpt->get_dpid()).dpt_bind(this, dpt);
 }
 
 
@@ -155,7 +155,8 @@ ethswitch::handle_packet_in(
 {
 	cmacaddr eth_src = msg->get_packet().ether()->get_dl_src();
 	cmacaddr eth_dst = msg->get_packet().ether()->get_dl_dst();
-
+    
+    return;
 	/*
 	 * sanity check: if source mac is multicast => invalid frame
 	 */
