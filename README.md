@@ -21,10 +21,13 @@ Requirements
 - ROFL libraries installed [2]
 - xDPd libraries installed [3]
 - Python v2.7
+- pyparsing library [4]
 
 [2] http://www.roflibs.org/, https://github.com/bisdn/rofl-core
 
 [3] http://www.xdpd.org/, https://github.com/bisdn/xdpd
+
+[4] http://pyparsing.wikispaces.com/
 
 How to configure 
 =============
