@@ -125,3 +125,7 @@ Authorship
 Damian Parniewicz<damian.parniewicz (at) gmail.com>
 
 Funded by EU ICT ALIEN project, http://www.fp7-alien.eu/
+
+See also
+========
+* ONF, OF-PI (A Protocol Independent Layer), http://www.layer123.com/download&doc=ONF-OF-PI__A_Protocol_Independent_Layer_for_OpenFlow_v1-1
