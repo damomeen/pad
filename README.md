@@ -36,7 +36,7 @@ Download ROFL, xDPd and PAD projects:
 
     git clone https://github.com/bisdn/rofl-core.git
     git clone https://github.com/bisdn/xdpd.git
-    git clone https://github.com/damomeen/pad
+    git clone https://github.com/fp7-alien/pad
     
 Currently PAD support only master-0.3 branch of both xDPd and ROFL thus you must switch to that branches:
    
